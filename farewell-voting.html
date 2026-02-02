@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farewell Voting 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .admin-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .admin-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tile {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .tile-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tile-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .tile-subtitle {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 50px auto;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .modal-header {
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .admin-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .admin-header h2 {
+            color: #667eea;
+        }
+
+        .lock-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .lock-btn.locked {
+            background: #4caf50;
+        }
+
+        .results-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .result-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .candidate-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .candidate-row.winner {
+            background: linear-gradient(135deg, #667eea22, #764ba222);
+            border: 2px solid #667eea;
+            font-weight: bold;
+        }
+
+        .vote-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            margin-top: 5px;
+            transition: width 0.5s;
+        }
+
+        .export-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .voter-info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-candidate-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .tiles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-btn {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="admin-btn" onclick="showAdminLogin()">🔐 Admin</button>
+
+    <div class="container" id="studentView">
+        <div class="header">
+            <h1>🎓 Farewell Voting 2026</h1>
+            <p>Vote for your favorite classmates!</p>
+        </div>
+
+        <div class="tiles-grid" id="tilesGrid"></div>
+    </div>
+
+    <div class="container" id="adminView" style="display: none;">
+        <div class="header">
+            <h1>🎓 Admin Dashboard</h1>
+            <button class="submit-btn" style="max-width: 200px; margin: 20px auto;" onclick="showStudentView()">Back to Voting</button>
+        </div>
+        <div class="admin-panel">
+            <div class="admin-header">
+                <h2>Live Results</h2>
+                <div>
+                    <button class="lock-btn" id="lockBtn" onclick="toggleVoting()">🔒 Lock Voting</button>
+                    <button class="export-btn" onclick="exportResults()">📊 Export Results</button>
+                </div>
+            </div>
+            <div class="results-grid" id="resultsGrid"></div>
+        </div>
+    </div>
+
+    <!-- Voting Modal -->
+    <div class="modal" id="votingModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <p id="modalSubtitle"></p>
+            </div>
+            <div id="votingForm"></div>
+            <div class="success-message" id="successMessage">✅ Vote submitted successfully!</div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeAdminModal()">&times;</span>
+            <div class="modal-header">
+                <h2>Admin Login</h2>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button class="submit-btn" onclick="adminLogin()">Login</button>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "02022010";
+        
+        const titles = [
+            { id: 1, name: "The Athlete", type: "single" },
+            { id: 2, name: "The Chatterbox", type: "single" },
+            { id: 3, name: "The All-Rounder", type: "mr-miss" },
+            { id: 4, name: "The Topper", type: "single" },
+            { id: 5, name: "The Bookworm", type: "single" },
+            { id: 6, name: "The Calm One", type: "single" },
+            { id: 7, name: "The Friendly One", type: "single" },
+            { id: 8, name: "The Popular One", type: "mr-miss" },
+            { id: 9, name: "The Entertainer", type: "mr-miss" },
+            { id: 10, name: "The Funny One", type: "mr-miss" },
+            { id: 11, name: "The Dancer", type: "single" },
+            { id: 12, name: "The Singer", type: "single" },
+            { id: 13, name: "The Late Comer", type: "single" },
+            { id: 14, name: "The Punctual One", type: "single" },
+            { id: 15, name: "The Foodie", type: "mr-miss" },
+            { id: 16, name: "Best Duos", type: "duo" },
+            { id: 17, name: "Mr & Mrs Perfect", type: "couple" },
+            { id: 18, name: "The Pedapp, Thullal, Vibrationist", type: "mr-miss" },
+            { id: 19, name: "The Editor", type: "single" }
+        ];
+
+        let votes = JSON.parse(localStorage.getItem('farewellVotes')) || {};
+        let votedTitles = JSON.parse(localStorage.getItem('votedTitles')) || [];
+        let votingLocked = localStorage.getItem('votingLocked') === 'true';
+        let candidates = JSON.parse(localStorage.getItem('candidates')) || {};
+
+        function initApp() {
+            renderTiles();
+            updateLockButton();
+        }
+
+        function renderTiles() {
+            const grid = document.getElementById('tilesGrid');
+            grid.innerHTML = titles.map(title => `
+                <div class="tile" onclick="openVotingModal(${title.id})">
+                    <div class="tile-number">${title.id}</div>
+                    <div class="tile-title">${title.name}</div>
+                    <div class="tile-subtitle">
+                        ${title.type === 'mr-miss' ? 'Vote for Mr & Miss' : 
+                          title.type === 'duo' ? 'Vote for Girls & Boys Duo' :
+                          title.type === 'couple' ? 'Vote for Mr & Mrs' : 'Tap to vote'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openVotingModal(titleId) {
+            if (votingLocked) {
+                alert('Voting has been closed by the admin.');
+                return;
+            }
+
+            if (votedTitles.includes(titleId)) {
+                alert('You have already voted for this title!');
+                return;
+            }
+
+            const title = titles.find(t => t.id === titleId);
+            document.getElementById('modalTitle').textContent = title.name;
+            document.getElementById('modalSubtitle').textContent = getSubtitle(title.type);
+            
+            const form = document.getElementById('votingForm');
+            form.innerHTML = generateForm(title);
+            
+            document.getElementById('votingModal').style.display = 'block';
+        }
+
+        function getSubtitle(type) {
+            switch(type) {
+                case 'mr-miss': return 'Vote for both Mr and Miss';
+                case 'duo': return 'Vote for Girls Duo and Boys Duo';
+                case 'couple': return 'Vote for Mr and Mrs';
+                default: return 'Who deserves this title?';
+            }
+        }
+
+        function generateForm(title) {
+            let html = '';
+
+            const titleCandidates = candidates[title.id] || [];
+            
+            switch(title.type) {
+                case 'mr-miss':
+                    html += generateCandidateField('Mr ' + title.name, 'mr', titleCandidates);
+                    html += generateCandidateField('Miss ' + title.name, 'miss', titleCandidates);
+                    break;
+                case 'duo':
+                    html += `<h4 style="margin: 20px 0 10px 0;">Girls Duo</h4>`;
+                    html += generateCandidateField('Girl 1', 'girl1', titleCandidates);
+                    html += generateCandidateField('Girl 2', 'girl2', titleCandidates);
+                    html += `<h4 style="margin: 20px 0 10px 0;">Boys Duo</h4>`;
+                    html += generateCandidateField('Boy 1', 'boy1', titleCandidates);
+                    html += generateCandidateField('Boy 2', 'boy2', titleCandidates);
+                    break;
+                case 'couple':
+                    html += generateCandidateField('Mr Perfect', 'mr', titleCandidates);
+                    html += generateCandidateField('Mrs Perfect', 'mrs', titleCandidates);
+                    break;
+                default:
+                    html += generateCandidateField('Candidate Name', 'candidate', titleCandidates);
+            }
+
+            html += `<button class="submit-btn" onclick="submitVote(${title.id})">Submit Vote</button>`;
+            return html;
+        }
+
+        function generateCandidateField(label, id, titleCandidates) {
+            const selectOptions = titleCandidates.length > 0 
+                ? `<option value="">-- Select or type below --</option>` + 
+                  titleCandidates.map(c => `<option value="${c}">${c}</option>`).join('')
+                : '';
+
+            return `<div class="form-group">
+                <label>${label}:</label>
+                ${selectOptions ? `<select id="select_${id}" onchange="fillInput('${id}')">
+                    ${selectOptions}
+                </select>` : ''}
+                <input type="text" id="${id}" placeholder="Enter name" style="margin-top: 10px;">
+            </div>`;
+        }
+
+        function fillInput(fieldId) {
+            const select = document.getElementById('select_' + fieldId);
+            const input = document.getElementById(fieldId);
+            if (select && input) {
+                input.value = select.value;
+            }
+        }
+
+        function submitVote(titleId) {
+            const title = titles.find(t => t.id === titleId);
+            
+            let voteData = { timestamp: new Date().toISOString() };
+            let isEmpty = true;
+
+            switch(title.type) {
+                case 'mr-miss':
+                    voteData.mr = document.getElementById('mr').value.trim();
+                    voteData.miss = document.getElementById('miss').value.trim();
+                    isEmpty = !voteData.mr && !voteData.miss;
+                    break;
+                case 'duo':
+                    voteData.girl1 = document.getElementById('girl1').value.trim();
+                    voteData.girl2 = document.getElementById('girl2').value.trim();
+                    voteData.boy1 = document.getElementById('boy1').value.trim();
+                    voteData.boy2 = document.getElementById('boy2').value.trim();
+                    isEmpty = !voteData.girl1 && !voteData.girl2 && !voteData.boy1 && !voteData.boy2;
+                    break;
+                case 'couple':
+                    voteData.mr = document.getElementById('mr').value.trim();
+                    voteData.mrs = document.getElementById('mrs').value.trim();
+                    isEmpty = !voteData.mr && !voteData.mrs;
+                    break;
+                default:
+                    voteData.candidate = document.getElementById('candidate').value.trim();
+                    isEmpty = !voteData.candidate;
+            }
+
+            if (isEmpty) {
+                alert('Please enter at least one candidate name!');
+                return;
+            }
+
+            if (!votes[titleId]) votes[titleId] = [];
+            votes[titleId].push(voteData);
+            votedTitles.push(titleId);
+
+            localStorage.setItem('farewellVotes', JSON.stringify(votes));
+            localStorage.setItem('votedTitles', JSON.stringify(votedTitles));
+
+            document.getElementById('successMessage').innerHTML = '✅ Vote submitted successfully!';
+            document.getElementById('successMessage').style.display = 'block';
+            
+            setTimeout(() => {
+                closeModal();
+            }, 1500);
+        }
+
+        function closeModal() {
+            document.getElementById('votingModal').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showAdminLogin() {
+            document.getElementById('adminModal').style.display = 'block';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                closeAdminModal();
+                showAdminView();
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+
+        function showAdminView() {
+            document.getElementById('studentView').style.display = 'none';
+            document.getElementById('adminView').style.display = 'block';
+            renderResults();
+        }
+
+        function showStudentView() {
+            document.getElementById('studentView').style.display = 'block';
+            document.getElementById('adminView').style.display = 'none';
+        }
+
+        function renderResults() {
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = titles.map(title => {
+                const titleVotes = votes[title.id] || [];
+                const results = calculateResults(titleVotes, title.type);
+                
+                return `<div class="result-card">
+                    <h3>${title.id}. ${title.name}</h3>
+                    <p style="color: #666; margin-bottom: 15px;">Total Votes: ${titleVotes.length}</p>
+                    ${renderResultsByType(results, title.type)}
+                </div>`;
+            }).join('');
+        }
+
+        function calculateResults(titleVotes, type) {
+            const counts = {};
+            
+            titleVotes.forEach(vote => {
+                if (type === 'mr-miss') {
+                    if (vote.mr) counts[`Mr: ${vote.mr}`] = (counts[`Mr: ${vote.mr}`] || 0) + 1;
+                    if (vote.miss) counts[`Miss: ${vote.miss}`] = (counts[`Miss: ${vote.miss}`] || 0) + 1;
+                } else if (type === 'duo') {
+                    if (vote.girl1 && vote.girl2) {
+                        const key = `Girls: ${vote.girl1} & ${vote.girl2}`;
+                        counts[key] = (counts[key] || 0) + 1;
+                    }
+                    if (vote.boy1 && vote.boy2) {
+                        const key = `Boys: ${vote.boy1} & ${vote.boy2}`;
+                        counts[key] = (counts[key] || 0) + 1;
+                    }
+                } else if (type === 'couple') {
+                    if (vote.mr) counts[`Mr: ${vote.mr}`] = (counts[`Mr: ${vote.mr}`] || 0) + 1;
+                    if (vote.mrs) counts[`Mrs: ${vote.mrs}`] = (counts[`Mrs: ${vote.mrs}`] || 0) + 1;
+                } else {
+                    if (vote.candidate) counts[vote.candidate] = (counts[vote.candidate] || 0) + 1;
+                }
+            });
+
+            return counts;
+        }
+
+        function renderResultsByType(results, type) {
+            if (Object.keys(results).length === 0) {
+                return '<p style="color: #999;">No votes yet</p>';
+            }
+
+            const maxVotes = Math.max(...Object.values(results));
+            const sorted = Object.entries(results).sort((a, b) => b[1] - a[1]);
+
+            return sorted.map(([name, count]) => {
+                const isWinner = count === maxVotes;
+                const percentage = maxVotes > 0 ? (count / maxVotes) * 100 : 0;
+                
+                return `<div class="candidate-row ${isWinner ? 'winner' : ''}">
+                    <span>${name}</span>
+                    <span>${count} vote${count !== 1 ? 's' : ''}</span>
+                    <div class="vote-bar" style="width: ${percentage}%"></div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleVoting() {
+            votingLocked = !votingLocked;
+            localStorage.setItem('votingLocked', votingLocked);
+            updateLockButton();
+        }
+
+        function updateLockButton() {
+            const btn = document.getElementById('lockBtn');
+            if (btn) {
+                if (votingLocked) {
+                    btn.textContent = '🔓 Unlock Voting';
+                    btn.classList.add('locked');
+                } else {
+                    btn.textContent = '🔒 Lock Voting';
+                    btn.classList.remove('locked');
+                }
+            }
+        }
+
+        function exportResults() {
+            let csv = 'Title,Category,Candidate,Votes\n';
+            
+            titles.forEach(title => {
+                const titleVotes = votes[title.id] || [];
+                const results = calculateResults(titleVotes, title.type);
+                
+                Object.entries(results).forEach(([name, count]) => {
+                    csv += `"${title.name}","${title.type}","${name}",${count}\n`;
+                });
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'farewell-voting-results.csv';
+            a.click();
+        }
+
+        window.onclick = function(event) {
+            const votingModal = document.getElementById('votingModal');
+            const adminModal = document.getElementById('adminModal');
+            if (event.target === votingModal) closeModal();
+            if (event.target === adminModal) closeAdminModal();
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
